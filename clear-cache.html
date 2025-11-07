@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache - Fix Shop Name</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        button { padding: 12px 24px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        .data-display { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Cache Management - Fix Shop Name Issue</h1>
+        
+        <div class="info">
+            <strong>Issue:</strong> The shop name is showing "SanjTiksha" instead of "Ajay Sea Foods" in the header. This is likely due to cached data in localStorage.
+        </div>
+
+        <div id="current-data">
+            <h3>Current localStorage Data:</h3>
+            <div id="data-display" class="data-display">Loading...</div>
+        </div>
+
+        <div>
+            <h3>Actions:</h3>
+            <button onclick="showCurrentData()">🔄 Refresh Data View</button>
+            <button onclick="clearAllCache()" class="danger">🗑️ Clear All Cache</button>
+            <button onclick="clearFishDataOnly()" class="danger">🐟 Clear Fish Data Only</button>
+            <button onclick="goToApp()">🏠 Go to App</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function showCurrentData() {
+            const dataDisplay = document.getElementById('data-display');
+            const results = document.getElementById('results');
+            
+            let output = 'localStorage Contents:\n\n';
+            
+            // Check for fishData specifically
+            const fishData = localStorage.getItem('fishData');
+            if (fishData) {
+                try {
+                    const parsed = JSON.parse(fishData);
+                    output += 'fishData found:\n';
+                    output += `  Shop Name: ${parsed.shopInfo?.name || 'Not found'}\n`;
+                    output += `  Owner: ${parsed.shopInfo?.owner || 'Not found'}\n`;
+                    output += `  Reviews Count: ${parsed.reviews?.length || 0}\n`;
+                    output += `  Fishes Count: ${parsed.fishes?.length || 0}\n`;
+                } catch (error) {
+                    output += `fishData found but corrupted: ${error.message}\n`;
+                }
+            } else {
+                output += 'No fishData found in localStorage\n';
+            }
+            
+            // Show all localStorage keys
+            output += '\nAll localStorage keys:\n';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                output += `  ${key}: ${value.length > 100 ? value.substring(0, 100) + '...' : value}\n`;
+            }
+            
+            dataDisplay.textContent = output;
+            results.innerHTML = '<div class="info">Data view refreshed</div>';
+        }
+
+        function clearAllCache() {
+            const results = document.getElementById('results');
+            
+            try {
+                localStorage.clear();
+                results.innerHTML = '<div class="success">✅ All localStorage data cleared successfully!</div>';
+                showCurrentData();
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ Error clearing cache: ${error.message}</div>`;
+            }
+        }
+
+        function clearFishDataOnly() {
+            const results = document.getElementById('results');
+            
+            try {
+                localStorage.removeItem('fishData');
+                results.innerHTML = '<div class="success">✅ Fish data cleared successfully! The app will now load fresh data from the JSON file.</div>';
+                showCurrentData();
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ Error clearing fish data: ${error.message}</div>`;
+            }
+        }
+
+        function goToApp() {
+            window.open('http://localhost:5175', '_blank');
+        }
+
+        // Show current data on page load
+        window.onload = function() {
+            showCurrentData();
+        };
+    </script>
+</body>
+</html>

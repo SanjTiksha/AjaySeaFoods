@@ -1,0 +1,135 @@
+{
+  "shopInfo": {
+    "name": "Ajay Sea Foods",
+    "owner": "Rohit Mangarekar",
+    "phone": "+917666293267",
+    "whatsapp": "917666293267",
+    "email": "rajeshfishmarket@gmail.com",
+    "address": "1, Bhau Patil Rd, Bapodi Gaothan, Bopodi, Pune, Maharashtra 411020",
+    "upiId": "QR917666293267-0301@unionbankofindia",
+    "qrImage": "/images/qr.png",
+    "workingHours": "6:00 AM - 8:00 PM",
+    "updatedOn": "2024-10-17T10:30:00Z"
+  },
+  "promotions": {
+    "text": "🎉 Get 15% OFF on Premium Surmai & Pomfret! Fresh from the sea, delivered to your door. Limited time offer!",
+    "isActive": true,
+    "expiresOn": "2025-12-31T23:59:59Z",
+    "discountPercentage": 15,
+    "discountedFish": ["Surmai (King Fish)", "Pomfret (White)"]
+  },
+  "discountSettings": {
+    "isEnabled": true,
+    "percentage": 5,
+    "minimumAmount": 1000,
+    "description": "off ₹1000+"
+  },
+  "reviews": [
+    {
+      "id": 1,
+      "name": "Priya Sharma",
+      "rating": 5,
+      "comment": "Amazing fresh fish! The quality is outstanding and delivery was super fast. Will definitely order again.",
+      "date": "2024-10-15",
+      "verified": true
+    },
+    {
+      "id": 2,
+      "name": "Rajesh Kumar",
+      "rating": 5,
+      "comment": "Best fish market in the area. Fresh catch every morning and reasonable prices.",
+      "date": "2024-10-14",
+      "verified": true
+    },
+    {
+      "id": 3,
+      "name": "Sunita Patel",
+      "rating": 4,
+      "comment": "Good quality fish, but delivery could be faster. Overall satisfied with the purchase.",
+      "date": "2024-10-13",
+      "verified": false
+    },
+    {
+      "id": 4,
+      "name": "Amit Singh",
+      "rating": 5,
+      "comment": "Excellent service! The fish was so fresh and the packaging was perfect. Highly recommended!",
+      "date": "2024-10-12",
+      "verified": true
+    }
+  ],
+  "fishes": [
+    {
+      "id": 1,
+      "name": "Surmai (King Fish)",
+      "category": "Seawater",
+      "rate": 450,
+      "unit": "per kg",
+      "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80",
+      "inStock": true,
+      "description": "Fresh King Fish, perfect for grilling",
+      "rateHistory": [
+        {
+          "date": "2024-10-17T10:30:00Z",
+          "rate": 450,
+          "updatedBy": "admin"
+        },
+        {
+          "date": "2024-10-16T10:30:00Z",
+          "rate": 440,
+          "updatedBy": "admin"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Pomfret (White)",
+      "category": "Seawater",
+      "rate": 380,
+      "unit": "per kg",
+      "image": "https://images.unsplash.com/photo-1559737558-9d8c3c6e8e4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80",
+      "inStock": true,
+      "description": "Premium white pomfret, ideal for curry"
+    },
+    {
+      "id": 3,
+      "name": "Rohu",
+      "category": "Freshwater",
+      "rate": 280,
+      "unit": "per kg",
+      "image": "https://images.unsplash.com/photo-1559847844-5315695dadae?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300&q=80",
+      "inStock": true,
+      "description": "Freshwater rohu, great for traditional recipes"
+    },
+    {
+      "id": 4,
+      "name": "Katla",
+      "category": "Freshwater",
+      "rate": 320,
+      "unit": "per kg",
+      "image": "https://images.pexels.com/photos/1683545/pexels-photo-1683545.jpeg?auto=compress&cs=tinysrgb&w=400&h=300",
+      "inStock": false,
+      "description": "Premium katla fish, out of stock"
+    },
+    {
+      "id": 5,
+      "name": "Prawns (Large)",
+      "category": "Seawater",
+      "rate": 650,
+      "unit": "per kg",
+      "image": "https://images.pexels.com/photos/566345/pexels-photo-566345.jpeg?auto=compress&cs=tinysrgb&w=400&h=300",
+      "inStock": true,
+      "description": "Fresh large prawns, perfect for biryani"
+    },
+    {
+      "id": 6,
+      "name": "Crab (Medium)",
+      "category": "Seawater",
+      "rate": 420,
+      "unit": "per kg",
+      "image": "https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=400&h=300",
+      "inStock": true,
+      "description": "Live medium crabs, ready to cook"
+    }
+  ]
+}

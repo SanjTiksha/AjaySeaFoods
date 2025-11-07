@@ -1,0 +1,215 @@
+import { useEffect, useRef, useState } from 'react';
+import { Minus, Plus } from 'lucide-react';
+import {
+  QUANTITY_LIMITS,
+  normalizeQuantity,
+  validateQuantity,
+  calculateLineTotal,
+} from '../utils/quantityUtils';
+
+const DEFAULT_PRESETS = [0.5, 1, 2, 5, 10, 25, 50, 100, 200];
+
+const QuantityInput = ({
+  value = QUANTITY_LIMITS.MIN,
+  onChange,
+  onValidityChange,
+  rate,
+  label = 'Select Quantity (kg)',
+  helperText = 'Please select weight in 0.5 kg steps (e.g., 0.5, 1.0, 1.5 …).',
+  presetOptions = DEFAULT_PRESETS,
+  disabled = false,
+  variant = 'default',
+}) => {
+  const [inputValue, setInputValue] = useState(value.toFixed(1));
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const formatted = normalizeQuantity(value).toFixed(1);
+    if (formatted !== inputValue) {
+      setInputValue(formatted);
+    }
+  }, [value]);
+
+  const lastValidityRef = useRef(null);
+
+  useEffect(() => {
+    if (!onValidityChange) return;
+
+    const isValid = !error;
+    if (lastValidityRef.current !== isValid) {
+      lastValidityRef.current = isValid;
+      onValidityChange(isValid);
+    }
+  }, [error, onValidityChange]);
+
+  const commitValue = (rawValue) => {
+    const result = validateQuantity(rawValue);
+
+    if (!result.valid) {
+      if (result.message.includes('between')) {
+        setError(result.message);
+        setInputValue(normalizeQuantity(value).toFixed(1));
+        if (onValidityChange) {
+          onValidityChange(false);
+        }
+        return;
+      }
+
+      const corrected = normalizeQuantity(result.normalized);
+      setError('');
+      setInputValue(corrected.toFixed(1));
+      if (typeof onChange === 'function') {
+        onChange(corrected);
+      }
+      if (onValidityChange) {
+        onValidityChange(true);
+      }
+      return;
+    }
+
+    setError('');
+    const normalized = normalizeQuantity(result.normalized);
+    setInputValue(normalized.toFixed(1));
+    if (typeof onChange === 'function') {
+      onChange(normalized);
+    }
+    if (onValidityChange) {
+      onValidityChange(true);
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const raw = event.target.value;
+    setInputValue(raw);
+
+    const { valid, message } = validateQuantity(raw);
+    setError(valid ? '' : message);
+
+    if (onValidityChange) {
+      onValidityChange(valid);
+    }
+
+    if (valid && typeof onChange === 'function') {
+      onChange(normalizeQuantity(raw));
+    }
+  };
+
+  const adjustQuantity = (direction) => {
+    const parsed = parseFloat(inputValue);
+    const base = Number.isNaN(parsed) ? value : parsed;
+    const delta = direction === 'increment' ? QUANTITY_LIMITS.STEP : -QUANTITY_LIMITS.STEP;
+    const next = normalizeQuantity(base + delta);
+    commitValue(next);
+  };
+
+  const handleQuickSelect = (preset) => {
+    const normalized = normalizeQuantity(preset);
+    setError('');
+    setInputValue(normalized.toFixed(1));
+    if (typeof onChange === 'function') {
+      onChange(normalized);
+    }
+  };
+
+  const isCompact = variant === 'compact';
+  const displaySubtotal =
+    typeof rate === 'number' && !Number.isNaN(rate)
+      ? calculateLineTotal(rate, normalizeQuantity(inputValue))
+      : null;
+
+  const renderHelper = () => {
+    if (error) {
+      return <p className="text-xs text-red-500 mt-1">{error}</p>;
+    }
+
+    if (helperText && !isCompact) {
+      return <p className="text-xs text-gray-500 mt-1">{helperText}</p>;
+    }
+
+    return null;
+  };
+
+  return (
+    <div className={isCompact ? 'space-y-1' : 'space-y-3'}>
+      {!isCompact && (
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-gray-700">{label}</label>
+          {displaySubtotal !== null && (
+            <span className="text-sm font-semibold text-blue-600">
+              ₹{displaySubtotal.toFixed(2)} for {normalizeQuantity(inputValue).toFixed(1)} kg
+            </span>
+          )}
+        </div>
+      )}
+
+      <div
+        className={`flex items-center justify-center ${
+          isCompact ? 'space-x-3' : 'space-x-4'
+        } border border-gray-200 rounded-xl bg-white/80 backdrop-blur-sm px-3 py-2 min-w-[110px]`}
+      >
+        <button
+          type="button"
+          onClick={() => adjustQuantity('decrement')}
+          disabled={disabled}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
+
+        <div
+          className={`flex-1 text-center font-medium text-blue-600 ${
+            isCompact ? 'text-sm' : 'text-base'
+          }`}
+        >
+          <input
+            type="number"
+            inputMode="decimal"
+            min={QUANTITY_LIMITS.MIN}
+            max={QUANTITY_LIMITS.MAX}
+            step={QUANTITY_LIMITS.STEP}
+            value={inputValue}
+            disabled={disabled}
+            onChange={handleInputChange}
+            onBlur={() => commitValue(inputValue)}
+            className=" bg-transparent text-blue-400 font-semibold focus:outline-none text-center px-1 py-1"
+            style={{ fontSize: isCompact ? '14px' : '16px' }}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => adjustQuantity('increment')}
+          disabled={disabled}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+
+      {renderHelper()}
+
+      {!isCompact && (
+        <div className="flex flex-wrap gap-2">
+          {presetOptions.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={() => handleQuickSelect(preset)}
+              className={`px-3 py-1.5 rounded-full border text-sm transition-colors ${
+                normalizeQuantity(inputValue) === normalizeQuantity(preset)
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600'
+              }`}
+            >
+              {preset} kg
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default QuantityInput;
+
+

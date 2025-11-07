@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Persistence Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .review { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Review Persistence Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <p>This test simulates the review persistence functionality:</p>
+        <ol>
+            <li>Click "Add Test Review" to add a review</li>
+            <li>Click "Refresh Page" to simulate a page refresh</li>
+            <li>Check if the review persists after refresh</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Actions</h2>
+        <button onclick="addTestReview()">Add Test Review</button>
+        <button onclick="clearReviews()">Clear All Reviews</button>
+        <button onclick="location.reload()">Refresh Page</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Current Reviews</h2>
+        <div id="reviews-container">
+            <!-- Reviews will be displayed here -->
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results">
+            <!-- Test results will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Simulate the fishData structure
+        let fishData = {
+            reviews: [
+                {
+                    id: 1,
+                    name: "Test User",
+                    rating: 5,
+                    comment: "This is a test review",
+                    date: "2024-10-17",
+                    verified: false
+                }
+            ]
+        };
+
+        // Load data from localStorage on page load
+        function loadData() {
+            const savedData = localStorage.getItem('fishData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    fishData = {
+                        ...fishData,
+                        ...parsedData,
+                        reviews: parsedData.reviews || fishData.reviews
+                    };
+                    console.log('Loaded data from localStorage:', fishData);
+                } catch (error) {
+                    console.error('Error parsing saved data:', error);
+                }
+            }
+            displayReviews();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('fishData', JSON.stringify(fishData));
+            console.log('Saved data to localStorage:', fishData);
+        }
+
+        // Add a test review
+        function addTestReview() {
+            const newReview = {
+                id: Date.now(),
+                name: "Test Customer " + Math.floor(Math.random() * 1000),
+                rating: Math.floor(Math.random() * 5) + 1,
+                comment: "This is a test review added at " + new Date().toLocaleTimeString(),
+                date: new Date().toISOString().split('T')[0],
+                verified: false
+            };
+            
+            fishData.reviews = [newReview, ...fishData.reviews];
+            saveData();
+            displayReviews();
+            showTestResult('success', 'Test review added successfully!');
+        }
+
+        // Clear all reviews
+        function clearReviews() {
+            fishData.reviews = [];
+            saveData();
+            displayReviews();
+            showTestResult('info', 'All reviews cleared!');
+        }
+
+        // Display reviews
+        function displayReviews() {
+            const container = document.getElementById('reviews-container');
+            if (fishData.reviews.length === 0) {
+                container.innerHTML = '<p>No reviews yet.</p>';
+                return;
+            }
+
+            container.innerHTML = fishData.reviews.map(review => `
+                <div class="review">
+                    <strong>${review.name}</strong> - ${review.rating} stars<br>
+                    <em>${review.comment}</em><br>
+                    <small>Date: ${review.date}</small>
+                </div>
+            `).join('');
+        }
+
+        // Show test results
+        function showTestResult(type, message) {
+            const resultsContainer = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-section ${type}`;
+            resultDiv.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${message}`;
+            resultsContainer.appendChild(resultDiv);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                resultDiv.remove();
+            }, 5000);
+        }
+
+        // Check if reviews persisted after page load
+        function checkPersistence() {
+            const savedData = localStorage.getItem('fishData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    if (parsedData.reviews && parsedData.reviews.length > 0) {
+                        showTestResult('success', `Reviews persisted! Found ${parsedData.reviews.length} reviews in localStorage.`);
+                    } else {
+                        showTestResult('error', 'No reviews found in localStorage.');
+                    }
+                } catch (error) {
+                    showTestResult('error', 'Error reading reviews from localStorage.');
+                }
+            } else {
+                showTestResult('error', 'No data found in localStorage.');
+            }
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            loadData();
+            checkPersistence();
+        };
+    </script>
+</body>
+</html>
