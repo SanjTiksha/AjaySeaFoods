@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import Reviews from '../components/Reviews';
-import HeroSliderSimple from '../components/HeroSliderSimple';
 import SmartBanner from '../components/SmartBanner';
+import HeroSliderSimple from '../components/HeroSliderSimple';
 import { getFishImageUrl, handleImageError } from '../utils/imageUtils';
 
 const Home = ({ fishData, refreshFishData }) => {
