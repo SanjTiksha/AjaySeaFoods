@@ -6,6 +6,7 @@ import FishImageUpload from './FishImageUpload';
 import FirestoreDiagnostics from './FirestoreDiagnostics';
 import { getFishImageUrl, handleImageError } from '../utils/imageUtils';
 import { uploadOwnerPhoto } from '../utils/cloudinaryUpload';
+import SideMenu from './SideMenu';
 import { 
   saveDiscountSettings, 
   savePromotionBanner, 
@@ -284,6 +285,18 @@ const AdminPanel = ({ fishData, refreshFishData, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-cyan-50">
+      <SideMenu
+        onNavigate={(tabId) => {
+          if (tabId) {
+            setActiveTab(tabId);
+          }
+        }}
+        onLogout={onLogout}
+        adminInfo={{
+          name: fishData?.shopInfo?.owner,
+          email: fishData?.shopInfo?.email,
+        }}
+      />
       {/* Header */}
       <div className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -301,37 +314,6 @@ const AdminPanel = ({ fishData, refreshFishData, onLogout }) => {
               </button>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex space-x-8">
-            {[
-              { id: 'fishes', label: 'Fish Management' },
-              { id: 'stock', label: 'Daily Stock' },
-              { id: 'bulkRates', label: 'Bulk Rate Update' },
-              { id: 'rates', label: 'Rate History' },
-              { id: 'reviews', label: 'Reviews' },
-              { id: 'shop', label: 'Shop Settings' },
-              { id: 'promotions', label: 'Promotions' },
-              { id: 'backup', label: 'Backup & Restore' },
-              { id: 'diagnostics', label: '🔍 Diagnostics' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
         </div>
       </div>
 
