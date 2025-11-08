@@ -66,7 +66,7 @@ const BulkRateUpdateForm = ({ fishData, refreshFishData }) => {
       ...prev,
       [fishId]: {
         ...prev[fishId],
-        available: newAvailable === 'true' || newAvailable === true
+        available: !!newAvailable
       }
     }));
   };
@@ -221,20 +221,20 @@ const BulkRateUpdateForm = ({ fishData, refreshFishData }) => {
       <div className="card overflow-hidden p-0">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 sticky top-0 z-10">
+            <thead className="bg-blue-50 text-gray-700 text-sm font-semibold sticky top-0 z-10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
-                  Fish Name
+                <th className="px-4 py-3 text-left w-1/2">
+                  FISH NAME
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
-                  Rate (₹)
+                <th className="px-4 py-3 text-center w-1/4">
+                  RATE (₹)
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
-                  Availability
+                <th className="px-4 py-3 text-center w-1/4">
+                  AVAILABLE
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white text-gray-800">
               {sortedFishes.map((fish) => {
                 const original = originalData[fish.fishId];
                 const hasChanged = original && (
@@ -243,12 +243,12 @@ const BulkRateUpdateForm = ({ fishData, refreshFishData }) => {
                 );
 
                 return (
-                  <tr 
-                    key={fish.fishId} 
-                    className={hasChanged ? 'bg-yellow-50' : ''}
+                  <tr
+                    key={fish.fishId}
+                    className={`border-b hover:bg-gray-50 ${hasChanged ? 'bg-yellow-50 hover:bg-yellow-100' : ''}`}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-gray-900">
                         {fish.fishName}
                       </div>
                       {hasChanged && (
@@ -257,38 +257,32 @@ const BulkRateUpdateForm = ({ fishData, refreshFishData }) => {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="relative">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={fish.rate}
-                          onChange={(e) => handleRateChange(fish.fishId, e.target.value)}
-                          disabled={isUpdating}
-                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                            hasChanged ? 'border-yellow-400 bg-yellow-50' : 'border-gray-300'
-                          } disabled:opacity-50 disabled:cursor-not-allowed`}
-                        />
-                        {original && fish.rate !== original.rate && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            Was: ₹{original.rate}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={fish.available ? 'true' : 'false'}
-                        onChange={(e) => handleAvailabilityChange(fish.fishId, e.target.value)}
+                    <td className="px-4 py-3 text-center">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={fish.rate}
+                        onChange={(e) => handleRateChange(fish.fishId, e.target.value)}
                         disabled={isUpdating}
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        className={`w-24 md:w-32 px-2 py-1 border rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-blue-400 ${
                           hasChanged ? 'border-yellow-400 bg-yellow-50' : 'border-gray-300'
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        <option value="true">Available</option>
-                        <option value="false">Out of Stock</option>
-                      </select>
+                      />
+                      {original && fish.rate !== original.rate && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Was: ₹{original.rate}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={fish.available}
+                        onChange={(e) => handleAvailabilityChange(fish.fishId, e.target.checked)}
+                        disabled={isUpdating}
+                        className="w-5 h-5 accent-blue-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      />
                       {original && fish.available !== original.available && (
                         <div className="text-xs text-gray-500 mt-1">
                           Was: {original.available ? 'Available' : 'Out of Stock'}
