@@ -1,17 +1,43 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const FloatingActionButton = ({ children, position = 'bottom-right' }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState('calc(3rem + 50px)');
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateOffset = () => {
+      if (window.innerWidth < 768) {
+        setBottomOffset('calc(3rem + 60px)');
+      } else {
+        setBottomOffset('3rem');
+      }
+    };
+
+    updateOffset();
+    window.addEventListener('resize', updateOffset);
+    return () => window.removeEventListener('resize', updateOffset);
+  }, []);
+
+  if (location.pathname === '/admin') {
+    return null;
+  }
 
   const positionClasses = {
-    'bottom-right': 'bottom-6 right-6',
-    'bottom-left': 'bottom-6 left-6',
+    'bottom-right': 'right-6',
+    'bottom-left': 'left-6',
     'top-right': 'top-6 right-6',
     'top-left': 'top-6 left-6'
   };
 
+  const isBottomPosition = position.includes('bottom');
+  const containerStyle = isBottomPosition ? { bottom: bottomOffset } : undefined;
+
   return (
-    <div className={`fixed ${positionClasses[position]} z-40`}>
+    <div className={`fixed ${positionClasses[position]} z-40`} style={containerStyle}>
       <div className={`transition-all duration-300 ${isOpen ? 'space-y-3' : 'space-y-0'}`}>
         {/* Action Buttons */}
         <div className={`flex flex-col space-y-3 transition-all duration-300 ${
@@ -23,7 +49,7 @@ const FloatingActionButton = ({ children, position = 'bottom-right' }) => {
         {/* Main FAB Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-14 h-14 bg-red-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center ${
+          className={`w-14 h-14 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 hover:shadow-xl transition-all duration-300 flex items-center justify-center ${
             isOpen ? 'rotate-45' : 'rotate-0'
           }`}
           aria-label="Toggle actions"
